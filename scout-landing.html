@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scout — Network monitoring for MSPs. Devices, not sensors.</title>
+<style>
+  :root{
+    --ink:#0B0E14;          /* near-black, cool */
+    --ink-2:#161B26;
+    --paper:#F5F3EF;        /* warm off-white for light blocks */
+    --line:#283142;
+    --signal:#3DDC97;       /* Scout green — "up", confirmed, alive */
+    --signal-dim:#1f7a55;
+    --amber:#FFB454;        /* warning, review-needed */
+    --down:#FF5C6C;         /* down, the renewal-hike red */
+    --mute:#8A93A6;
+    --mute-2:#5A6478;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ink);
+    color:#E8EBF0;
+    font-family:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:"IBM Plex Mono","SFMono-Regular",Menlo,Consolas,monospace}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+  /* ---- nav ---- */
+  nav{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;max-width:1080px;margin:0 auto}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-0.02em;font-size:20px}
+  .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--signal);box-shadow:0 0 12px var(--signal);animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(.82)}}
+  nav .cta-mini{font-size:14px;color:var(--ink);background:var(--signal);padding:9px 16px;border-radius:7px;text-decoration:none;font-weight:600}
+
+  /* ---- hero ---- */
+  .hero{padding:64px 0 28px;text-align:center}
+  .eyebrow{display:inline-block;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);border:1px solid var(--line);border-radius:100px;padding:6px 15px;margin-bottom:26px}
+  h1{font-size:clamp(34px,5.4vw,60px);line-height:1.04;letter-spacing:-0.035em;font-weight:700;max-width:16ch;margin:0 auto 10px}
+  h1 .strike{color:var(--down);text-decoration:line-through;text-decoration-thickness:3px}
+  .sub{font-size:clamp(16px,2vw,19px);color:var(--mute);max-width:54ch;margin:20px auto 0}
+  .sub b{color:#E8EBF0;font-weight:600}
+
+  /* ---- the signature: live migration demo ---- */
+  .demo{margin:46px auto 0;max-width:940px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,#0E131D,#0B0E14);overflow:hidden;box-shadow:0 30px 80px -40px rgba(0,0,0,.9)}
+  .demo-bar{display:flex;align-items:center;gap:8px;padding:13px 18px;border-bottom:1px solid var(--line);background:#0C1019}
+  .demo-bar .d{width:11px;height:11px;border-radius:50%;background:#2A3346}
+  .demo-bar .label{margin-left:10px;font-size:12.5px;color:var(--mute-2)}
+  .demo-grid{display:grid;grid-template-columns:1fr 64px 1fr;align-items:stretch}
+  @media(max-width:720px){.demo-grid{grid-template-columns:1fr;}.demo-mid{display:none!important}}
+  .col{padding:20px 18px;text-align:left}
+  .col h3{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute-2);margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+  .col.prtg h3 .tag{color:var(--down)}
+  .col.scout h3 .tag{color:var(--signal)}
+  .demo-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;border-left:1px solid var(--line);border-right:1px solid var(--line);background:#0C1019;color:var(--mute-2)}
+  .demo-mid .arrow{font-size:22px;color:var(--signal)}
+  .demo-mid .cnt{font-size:10px;margin-top:6px;text-align:center;line-height:1.3}
+
+  .sensor{font-size:12.5px;padding:6px 9px;border-radius:6px;margin-bottom:5px;background:#11161F;border:1px solid #1c2433;display:flex;align-items:center;gap:8px;opacity:0;transform:translateY(4px);transition:opacity .4s,transform .4s}
+  .sensor.show{opacity:1;transform:none}
+  .sensor .s-dot{width:6px;height:6px;border-radius:50%;flex:none}
+  .s-up{background:var(--signal)} .s-warn{background:var(--amber)} .s-down{background:var(--down)}
+  .sensor .s-name{color:#C2CAD8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  .device{border:1px solid #233042;border-radius:8px;padding:11px 12px;margin-bottom:9px;background:#0F151E;opacity:0;transform:translateY(6px);transition:opacity .5s,transform .5s}
+  .device.show{opacity:1;transform:none}
+  .device .d-head{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+  .device .d-name{font-weight:600;font-size:13.5px;color:#EAF0F7}
+  .device .d-type{font-size:10.5px;color:var(--signal);border:1px solid var(--signal-dim);border-radius:4px;padding:1px 6px}
+  .device .d-type.low{color:var(--amber);border-color:#7a5a1f}
+  .device .d-aspects{font-size:11.5px;color:var(--mute);line-height:1.5}
+  .device.skip{opacity:.5}
+  .device.skip .d-type{color:var(--mute-2);border-color:#2a3346}
+
+  .demo-foot{padding:14px 18px;border-top:1px solid var(--line);background:#0C1019;font-size:13px;color:var(--mute);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+  .demo-foot b{color:var(--signal)}
+  .replay{font-size:12px;color:var(--mute-2);background:none;border:1px solid var(--line);border-radius:6px;padding:5px 11px;cursor:pointer;font-family:inherit}
+  .replay:hover{color:#E8EBF0;border-color:var(--mute-2)}
+
+  /* ---- waitlist ---- */
+  .signup{margin:34px auto 0;max-width:520px;text-align:center}
+  .field{display:flex;gap:9px;margin-top:14px}
+  @media(max-width:480px){.field{flex-direction:column}}
+  .field input{flex:1;background:var(--ink-2);border:1px solid var(--line);border-radius:9px;padding:14px 15px;color:#fff;font-size:15px;font-family:inherit}
+  .field input::placeholder{color:var(--mute-2)}
+  .field input:focus{outline:2px solid var(--signal);outline-offset:1px;border-color:transparent}
+  .field button{background:var(--signal);color:var(--ink);border:none;border-radius:9px;padding:14px 22px;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .field button:hover{filter:brightness(1.07)}
+  .micro{font-size:12.5px;color:var(--mute-2);margin-top:11px}
+  .ok-msg{color:var(--signal);font-size:15px;margin-top:14px;display:none}
+
+  /* ---- proof / price strip ---- */
+  section{padding:60px 0;border-top:1px solid var(--ink-2)}
+  .kicker{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute-2);text-align:center;margin-bottom:8px}
+  h2{font-size:clamp(26px,3.5vw,38px);letter-spacing:-0.03em;text-align:center;max-width:20ch;margin:0 auto 38px;line-height:1.1}
+
+  .price-table{width:100%;border-collapse:collapse;font-size:14.5px;max-width:760px;margin:0 auto}
+  .price-table th,.price-table td{padding:13px 14px;text-align:left;border-bottom:1px solid var(--ink-2)}
+  .price-table th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute-2);font-weight:600}
+  .price-table .us{color:var(--signal);font-weight:600}
+  .price-table .them{color:var(--mute)}
+  .price-table tr.hl td{background:#0E131D}
+  .price-table .eff{font-size:12.5px;color:var(--mute-2)}
+
+  /* ---- calculator ---- */
+  .calc{max-width:780px;margin:0 auto}
+  .calc-controls{display:flex;gap:26px;flex-wrap:wrap;margin-bottom:26px}
+  .calc-ctrl{flex:1;min-width:240px}
+  .calc-ctrl-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
+  .calc-ctrl-head label{font-size:13.5px;color:var(--mute)}
+  .calc-ctrl-head span{font-size:19px;font-weight:600;color:#E8EBF0}
+  .calc input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:5px;border-radius:5px;background:var(--line);outline:none}
+  .calc input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:19px;height:19px;border-radius:50%;background:var(--signal);cursor:pointer;border:3px solid var(--ink)}
+  .calc input[type=range]::-moz-range-thumb{width:19px;height:19px;border-radius:50%;background:var(--signal);cursor:pointer;border:3px solid var(--ink)}
+  .calc-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:24px}
+  @media(max-width:560px){.calc-cards{grid-template-columns:repeat(2,1fr)}}
+  .pcard{background:var(--ink-2);border:1px solid var(--line);border-radius:10px;padding:15px 14px}
+  .pcard.us{background:rgba(61,220,151,.08);border-color:var(--signal-dim)}
+  .pc-name{font-size:12.5px;color:var(--mute-2);margin-bottom:6px}
+  .pcard.us .pc-name{color:var(--signal)}
+  .pc-cost{font-size:25px;font-weight:600;letter-spacing:-0.02em}
+  .pcard.us .pc-cost{color:var(--signal)}
+  .pc-sub{font-size:11.5px;color:var(--mute-2);margin-top:2px}
+  .calc-chart{position:relative;width:100%;height:280px;margin-bottom:6px}
+  .calc-save{margin-top:18px;padding:15px 17px;background:rgba(61,220,151,.08);border:1px solid var(--signal-dim);border-radius:10px;font-size:14.5px;color:#CFF5E5}
+  .calc-save b{color:var(--signal)}
+  .calc-foot{font-size:11.5px;color:var(--mute-2);margin-top:14px;line-height:1.6}
+  .handoff{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:20px;padding:18px 20px;border:1px solid var(--line);border-radius:12px;background:var(--ink-2)}
+  .handoff-title{font-size:15.5px;font-weight:600;color:#E8EBF0}
+  .handoff-sub{font-size:13px;color:var(--mute);margin-top:3px;max-width:46ch}
+  .handoff-btn{flex:none;background:transparent;color:var(--signal);border:1px solid var(--signal-dim);border-radius:8px;padding:11px 20px;font-weight:600;font-size:14px;text-decoration:none}
+  .handoff-btn:hover{background:rgba(61,220,151,.08)}
+
+  .three{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:880px;margin:0 auto}
+  @media(max-width:720px){.three{grid-template-columns:1fr}}
+  .card{border:1px solid var(--line);border-radius:12px;padding:24px 22px}
+  .card .n{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--signal);margin-bottom:12px}
+  .card h4{font-size:17px;letter-spacing:-0.02em;margin-bottom:8px}
+  .card p{font-size:14px;color:var(--mute);line-height:1.55}
+
+  footer{padding:48px 0 60px;text-align:center;border-top:1px solid var(--ink-2);color:var(--mute-2);font-size:13px}
+  footer .brand{justify-content:center;margin-bottom:14px;color:#E8EBF0}
+  .lock{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--signal);border:1px solid var(--signal-dim);border-radius:100px;padding:7px 15px;margin-top:6px}
+
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    .sensor,.device{opacity:1!important;transform:none!important}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand"><span class="dot"></span>Scout</div>
+  <a href="#waitlist" class="cta-mini">Get early access</a>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">For MSPs leaving PRTG &amp; SolarWinds</span>
+    <h1>Leaving PRTG used to mean rebuilding everything.<br>Now it takes an afternoon.</h1>
+    <p class="sub">Scout reads your PRTG export and rebuilds your whole network for you — devices, groups, thresholds, all of it. Monitor every client from one cloud. Priced <b>per device, not per sensor.</b> Published, locked for 3 years.</p>
+
+    <!-- SIGNATURE: live migration demo built from a real PRTG export -->
+    <div class="demo" id="demo">
+      <div class="demo-bar">
+        <span class="d"></span><span class="d"></span><span class="d"></span>
+        <span class="label mono">scout migrate — your-client-prtg-export.xml</span>
+      </div>
+      <div class="demo-grid">
+        <div class="col prtg">
+          <h3>PRTG export <span class="tag mono" id="sensorCount">21 sensors</span></h3>
+          <div id="sensorList"></div>
+        </div>
+        <div class="demo-mid">
+          <div class="arrow">→</div>
+          <div class="cnt mono">Scout<br>consolidates</div>
+        </div>
+        <div class="col scout">
+          <h3>Scout devices <span class="tag mono" id="deviceCount">7 devices</span></h3>
+          <div id="deviceList"></div>
+        </div>
+      </div>
+      <div class="demo-foot">
+        <span>21 sensors → <b>7 real devices</b>, mapped &amp; ready to confirm — no rebuild by hand.</span>
+        <button class="replay" id="replay">↻ Replay</button>
+      </div>
+    </div>
+
+    <div class="signup" id="waitlist">
+      <div class="field">
+        <input type="email" id="email" placeholder="you@youragency.com" aria-label="Work email">
+        <button id="join">Get early access</button>
+      </div>
+      <p class="micro">Early MSP partners get migration help and locked launch pricing. No spam, no card.</p>
+      <p class="ok-msg" id="okMsg">✓ You're on the list. We'll reach out personally — reply to the email and tell us what you're running.</p>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">And it's cheaper too — published, no quote</p>
+    <h2>Drag it to your number. See your exact price, locked.</h2>
+
+    <div class="calc">
+      <div class="calc-controls">
+        <div class="calc-ctrl">
+          <div class="calc-ctrl-head"><label for="dev">Devices monitored</label><span id="devOut" class="mono">100</span></div>
+          <input type="range" id="dev" min="10" max="500" value="100" step="10">
+        </div>
+      </div>
+
+      <div class="calc-cards">
+        <div class="pcard us">
+          <div class="pc-name">Scout</div>
+          <div class="pc-cost mono" id="cScout">$215</div>
+          <div class="pc-sub">/mo · 3-yr lock</div>
+        </div>
+        <div class="pcard">
+          <div class="pc-name">PRTG</div>
+          <div class="pc-cost mono" id="cPrtg">$325</div>
+          <div class="pc-sub" id="cPrtgX">/mo</div>
+        </div>
+        <div class="pcard">
+          <div class="pc-name">SolarWinds</div>
+          <div class="pc-cost mono" id="cSw">$700</div>
+          <div class="pc-sub" id="cSwX">/mo</div>
+        </div>
+        <div class="pcard">
+          <div class="pc-name">Auvik</div>
+          <div class="pc-cost mono" id="cAuvik">$300</div>
+          <div class="pc-sub" id="cAuvikX">/mo</div>
+        </div>
+      </div>
+
+      <div class="calc-chart"><canvas id="costChart" role="img" aria-label="Monthly cost vs device count for Scout, PRTG, SolarWinds and Auvik. Scout stays lowest as devices scale.">Scout stays the lowest monthly cost as devices scale from 10 to 2000.</canvas></div>
+
+      <div class="calc-save" id="saveLine"></div>
+      <p class="calc-foot">Scout: $2.50/device with volume bands ($2.00 over 100, $1.50 over 500), $29 min — published, locked for 3 years. PRTG: published tier prices (PRTG 500 $200/mo for 50 devices through PRTG 10000 $1,642/mo for 1,000) — the two largest tiers require "talk to sales." SolarWinds: ~$7/node/mo. Auvik: ~$3/device/mo. Competitor figures from published pricing; estimates for comparison, not quotes.</p>
+      <div class="handoff">
+        <div>
+          <div class="handoff-title">Running more than 500 devices?</div>
+          <div class="handoff-sub">Larger fleets get volume pricing and white-glove migration. Two-minute conversation, no sales runaround.</div>
+        </div>
+        <a href="#waitlist" class="handoff-btn">Talk to us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">Why MSPs are switching</p>
+    <h2>One agent per site. Every client. No server to host.</h2>
+    <div class="three">
+      <div class="card">
+        <div class="n mono">01 / migrate</div>
+        <h4>Switch without the rebuild</h4>
+        <p>Drop in your PRTG export. Scout reads it, groups sensors into real devices, and hands you a plan to approve — not 2,000 settings to recreate by hand.</p>
+      </div>
+      <div class="card">
+        <div class="n mono">02 / deploy</div>
+        <h4>Outbound agent, nothing inbound</h4>
+        <p>One lightweight agent per client site phones home to your cloud. No VPN into their network, no firewall tickets, no server for you or them to maintain.</p>
+      </div>
+      <div class="card">
+        <div class="n mono">03 / report</div>
+        <h4>Reports your clients actually read</h4>
+        <p>White-label network health reports per client, on a schedule. The deliverable that proves your value every month — built in, not bolted on.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span>Scout</div>
+    <div class="lock">🔒 Published pricing, locked for 3 years</div>
+    <p style="margin-top:18px">Per device, not per sensor. Built by network people, for the ones leaving Turn/River pricing behind.</p>
+  </div>
+</footer>
+
+<script>
+// Real data from an actual PRTG export — this is the POC made visible.
+const sensors = [
+  {n:"System Health",s:"up"},{n:"Core Health",s:"up"},{n:"Probe Health",s:"up"},
+  {n:"Disk Free",s:"up"},{n:"Killer Wi-Fi 6 AX1650i",s:"up"},
+  {n:"Core Health (Autonomous)",s:"up"},{n:"HTTP",s:"up"},
+  {n:"Ping v2",s:"up"},{n:"SNMP Uptime v2",s:"up"},{n:"EEPS2 Traffic",s:"up"},
+  {n:"Memory: Storage RAM",s:"up"},{n:"SSL Security Check",s:"warn"},
+  {n:"SSL Certificate Sensor",s:"warn"},{n:"Ping v2 (.30)",s:"down"},
+  {n:"HTTP v2",s:"up"},{n:"HTTPS v2",s:"up"},{n:"Ping v2 (.90)",s:"up"},
+  {n:"Ping v2 (gw)",s:"up"},{n:"Pages Printed Diff",s:"up"},
+  {n:"Pages Printed Total",s:"up"},{n:"DNS v2",s:"down"}
+];
+const devices = [
+  {name:"EPSOND1C173",type:"printer",low:false,aspects:"reachability · uptime · throughput · memory · SSL check · cert expiry · HTTP/S · page counts"},
+  {name:"192.168.1.1 (gateway)",type:"gateway/router",low:false,aspects:"reachability · DNS check"},
+  {name:"192.168.1.30",type:"unidentified host",low:true,aspects:"reachability — Scout discovery will identify this"},
+  {name:"192.168.1.90",type:"unidentified host",low:true,aspects:"reachability — Scout discovery will identify this"},
+  {name:"Internet check",type:"synthetic",low:false,aspects:"HTTP connectivity"},
+  {name:"Probe Device",type:"skip · PRTG's own host",low:false,skip:true,aspects:"PRTG self-monitoring — not migrated"},
+  {name:"PRTG Core Server",type:"skip · PRTG's own host",low:false,skip:true,aspects:"PRTG self-monitoring — not migrated"}
+];
+
+const sList=document.getElementById('sensorList');
+const dList=document.getElementById('deviceList');
+
+function run(){
+  sList.innerHTML='';dList.innerHTML='';
+  sensors.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='sensor';
+    el.innerHTML=`<span class="s-dot s-${s.s}"></span><span class="s-name">${s.n}</span>`;
+    sList.appendChild(el);
+    setTimeout(()=>el.classList.add('show'),60*i);
+  });
+  const startDev=sensors.length*60+250;
+  devices.forEach((d,i)=>{
+    const el=document.createElement('div');
+    el.className='device'+(d.skip?' skip':'');
+    el.innerHTML=`<div class="d-head"><span class="d-name">${d.name}</span>
+      <span class="d-type${d.low?' low':''}">${d.type}</span></div>
+      <div class="d-aspects">${d.aspects}</div>`;
+    dList.appendChild(el);
+    setTimeout(()=>el.classList.add('show'),startDev+150*i);
+  });
+}
+document.getElementById('replay').addEventListener('click',run);
+
+// run when scrolled into view
+const obs=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){run();obs.disconnect();}})},{threshold:.3});
+obs.observe(document.getElementById('demo'));
+
+// waitlist (front-end only — wire to a real form/Tally/Formspark before launch)
+document.getElementById('join').addEventListener('click',()=>{
+  const em=document.getElementById('email').value.trim();
+  if(!em||!em.includes('@')){document.getElementById('email').focus();return;}
+  document.getElementById('email').parentElement.style.display='none';
+  document.getElementById('okMsg').style.display='block';
+});
+document.getElementById('email').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('join').click();});
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+(function(){
+  const fmt=n=>'$'+Math.round(n).toLocaleString();
+  function scout(d){let cost=0,rem=d;const b1=Math.min(rem,100);cost+=b1*2.50;rem-=b1;const b2=Math.min(rem,400);cost+=b2*2.00;rem-=b2;cost+=rem*1.50;return Math.max(cost,29);}
+  const PRTG=[[50,200,false],[100,358,false],[250,742,false],[500,1300,true],[1000,1642,true]];
+  function prtg(d){const t=PRTG.find(x=>x[0]>=d);if(!t){return d*1.642;}return t[1];}
+  function prtgQuote(d){const t=PRTG.find(x=>x[0]>=d);return t?t[2]:true;}
+  function sw(d){return d*7.0;} function auvik(d){return d*3.0;}
+  const dEl=document.getElementById('dev');
+  const dOut=document.getElementById('devOut');
+  function series(fn){const p=[];for(let x=10;x<=500;x+=20){p.push({x,y:fn(x)});}return p;}
+  let chart;
+  function build(){
+    chart=new Chart(document.getElementById('costChart'),{type:'line',
+      data:{datasets:[
+        {label:'Scout',data:series(scout),borderColor:'#3DDC97',borderWidth:2.6,pointRadius:0,tension:.25},
+        {label:'PRTG',data:series(prtg),borderColor:'#FF5C6C',borderWidth:2,borderDash:[5,4],pointRadius:0,stepped:true},
+        {label:'SolarWinds',data:series(sw),borderColor:'#5B9DF0',borderWidth:2,borderDash:[2,3],pointRadius:0,tension:0},
+        {label:'Auvik',data:series(auvik),borderColor:'#FFB454',borderWidth:2,borderDash:[8,4],pointRadius:0,tension:0}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'nearest',intersect:false},
+        scales:{
+          x:{type:'linear',min:10,max:500,title:{display:true,text:'Devices',color:'#8A93A6',font:{size:11}},ticks:{color:'#8A93A6',font:{size:11}},grid:{color:'rgba(138,147,166,.13)'}},
+          y:{title:{display:true,text:'Cost / month',color:'#8A93A6',font:{size:11}},ticks:{color:'#8A93A6',font:{size:11},callback:v=>'$'+v.toLocaleString()},grid:{color:'rgba(138,147,166,.13)'}}
+        },
+        plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>i[0].parsed.x+' devices',label:c=>c.dataset.label+': '+fmt(c.parsed.y)+'/mo'}}}
+      }
+    });
+  }
+  function update(){
+    const d=+dEl.value;
+    dOut.textContent=d.toLocaleString();
+    const s=scout(d),p=prtg(d),w=sw(d),a=auvik(d);
+    document.getElementById('cScout').textContent=fmt(s);
+    document.getElementById('cPrtg').textContent=fmt(p);
+    document.getElementById('cSw').textContent=fmt(w);
+    document.getElementById('cAuvik').textContent=fmt(a);
+    document.getElementById('cPrtgX').textContent=prtgQuote(d)?'quote required':(p>s?'+'+fmt(p-s)+' vs Scout':'/mo');
+    document.getElementById('cSwX').textContent=w>s?'+'+fmt(w-s)+' vs Scout':'/mo';
+    document.getElementById('cAuvikX').textContent=a>s?'+'+fmt(a-s)+' vs Scout':'/mo';
+    const rival=Math.min(p,w,a),saveYr=(rival-s)*12;
+    document.getElementById('saveLine').innerHTML=saveYr>0
+      ?'<b>At '+d.toLocaleString()+' devices, Scout runs about '+fmt(saveYr)+'/year under the next cheapest</b> — published, no quote, locked for 3 years.'
+      :'<b>Priced with the serious tools — but published, not quoted, and locked for 3 years.</b> No sensor counting, no renewal shock.';
+    if(chart){chart.update('none');}
+  }
+  dEl.addEventListener('input',update);
+  const cobs=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){build();update();cobs.disconnect();}})},{threshold:.2});
+  cobs.observe(document.getElementById('costChart'));
+})();
+</script>
+</body>
+</html>
