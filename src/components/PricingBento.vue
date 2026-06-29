@@ -185,7 +185,7 @@ onBeforeUnmount(() => { if (chart) chart.destroy() })
   <BentoTile variant="feature" class="md:col-span-3 lg:col-span-4 flex flex-col justify-center" :delay="0.15">
     <div class="mono text-[11px] uppercase tracking-[0.16em] text-brand-soft mb-2">The model</div>
     <p class="text-2xl sm:text-[28px] font-extrabold leading-tight tracking-tight">
-      Per <span class="ink-underline">device.</span><br />Not per sensor.
+      Per <span class="accent-serif font-normal">device.</span><br />Not per sensor.
     </p>
     <p class="text-white/55 text-sm mt-3">21 sensors became 7 devices. You pay for the 7.</p>
   </BentoTile>

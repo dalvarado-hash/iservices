@@ -96,7 +96,7 @@ const dotClass = { up: 'bg-signal', warn: 'bg-amber', down: 'bg-down' }
       <span class="h-2.5 w-2.5 rounded-full border border-white/15"></span>
       <span class="h-2.5 w-2.5 rounded-full border border-white/15"></span>
       <span class="ml-3 mono text-xs text-white/40 truncate">
-        scout migrate — your-client-prtg-export.xml
+        scout migrate — your-client-prtg-export.xml<span class="cursor-blink" aria-hidden="true"></span>
       </span>
     </div>
 

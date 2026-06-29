@@ -19,6 +19,7 @@ export default {
       },
       fontFamily: {
         sans: ['Manrope', 'sans-serif'],
+        serif: ['Fraunces', 'ui-serif', 'Georgia', 'serif'],
         mono: ['IBM Plex Mono', 'ui-monospace', 'monospace']
       }
     }

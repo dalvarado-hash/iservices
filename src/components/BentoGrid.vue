@@ -9,10 +9,13 @@ import ReasonTiles from './ReasonTiles.vue'
     <div class="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-4 lg:gap-5 [grid-auto-flow:row_dense]">
       <!-- pricing section heading -->
       <BentoTile id="pricing" variant="bare" class="md:col-span-6 lg:col-span-12 scroll-mt-28 !p-0 pt-6 pb-1">
-        <div class="eyebrow mb-4"><span class="rule"></span>02 — Pricing · published, no quote</div>
+        <div class="spec-rule flex items-baseline justify-between pb-3 mb-5">
+          <div class="eyebrow"><span class="rule"></span>02 — Pricing</div>
+          <span class="mono text-[10px] tracking-[0.16em] uppercase text-white/25">published · no quote</span>
+        </div>
         <h2 class="display text-[clamp(26px,3.6vw,42px)] max-w-[24ch]">
           Drag it to your number.
-          <span class="text-white">See your <span class="ink-underline">exact price</span>, locked.</span>
+          <span class="text-white">See your <span class="accent-serif">exact price</span>, locked.</span>
         </h2>
       </BentoTile>
 
@@ -21,10 +24,13 @@ import ReasonTiles from './ReasonTiles.vue'
 
       <!-- why-switch section heading -->
       <BentoTile id="why" variant="bare" class="md:col-span-6 lg:col-span-12 scroll-mt-28 !p-0 pt-8 pb-1">
-        <div class="eyebrow mb-4"><span class="rule"></span>03 — Why MSPs are switching</div>
+        <div class="spec-rule flex items-baseline justify-between pb-3 mb-5">
+          <div class="eyebrow"><span class="rule"></span>03 — Why MSPs switch</div>
+          <span class="mono text-[10px] tracking-[0.16em] uppercase text-white/25">migrate · deploy · report</span>
+        </div>
         <h2 class="display text-[clamp(26px,3.6vw,42px)] max-w-[26ch]">
           One agent per site. Every client.
-          <span class="text-white">No server to host.</span>
+          <span class="text-white">No server to <span class="accent-serif">host.</span></span>
         </h2>
       </BentoTile>
 

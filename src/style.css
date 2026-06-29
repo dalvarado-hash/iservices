@@ -28,10 +28,12 @@
   .panel {
     background: #0b0b13;
     border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
   }
   .panel-feature {
     background: radial-gradient(130% 130% at 0% 0%, rgba(127, 57, 233, 0.16), transparent 55%), #0b0b13;
     border: 1px solid rgba(164, 70, 244, 0.28);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
   .panel-accent {
     background: #7f39e9;
@@ -62,26 +64,31 @@
     line-height: 1.03;
   }
 
-  /* ── designed highlight (replaces rainbow gradient text) ── */
-  .accent {
+  /* ── editorial serif accent: a human, designed counterpoint to the
+        technical sans + mono. Used only on a few key words. ── */
+  .accent-serif {
+    font-family: 'Fraunces', ui-serif, Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
     color: #c9a4ff;
+    letter-spacing: -0.01em;
+    padding-right: 0.04em;
   }
-  .ink-underline {
-    position: relative;
-    color: #fff;
-    white-space: nowrap;
+
+  /* ── spec-sheet ruled section header ── */
+  .spec-rule {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
   }
-  .ink-underline::after {
-    content: '';
-    position: absolute;
-    left: -1px;
-    right: -1px;
-    bottom: 0.07em;
-    height: 0.36em;
-    background: rgba(127, 57, 233, 0.5);
-    border-radius: 2px;
-    z-index: -1;
-    transform: rotate(-0.7deg);
+
+  /* blinking terminal cursor */
+  .cursor-blink {
+    display: inline-block;
+    width: 7px;
+    height: 1.05em;
+    margin-left: 1px;
+    vertical-align: -2px;
+    background: #a446f4;
+    animation: blink 1.15s steps(1) infinite;
   }
 
   /* ── flat solid button (no gradient, no glow) ── */
@@ -162,6 +169,16 @@
   to {
     opacity: 1;
     transform: none;
+  }
+}
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
   }
 }
 

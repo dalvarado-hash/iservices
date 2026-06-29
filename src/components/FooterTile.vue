@@ -31,8 +31,10 @@ import BrandMark from './BrandMark.vue'
         <a href="#waitlist" class="btn px-5 py-2.5 text-sm">Get early access</a>
       </div>
     </div>
-    <p class="text-center text-xs text-white/30 mt-6">
-      © 2026 Impulse · impulse.ky — Scout is a product of Impulse.
-    </p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-x-3 gap-y-1 mt-6 text-xs text-white/30">
+      <span>© 2026 Impulse · impulse.ky — Scout is a product of Impulse.</span>
+      <span class="hidden sm:inline text-white/15">/</span>
+      <span class="mono text-[11px] text-white/25 tracking-wide">built in the Cayman Islands · for the field</span>
+    </div>
   </footer>
 </template>

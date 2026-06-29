@@ -14,9 +14,9 @@ import Waitlist from './Waitlist.vue'
             For MSPs leaving PRTG &amp; SolarWinds
           </span>
 
-          <h1 class="display text-[clamp(34px,5.2vw,60px)] max-w-[15ch] mt-1">
+          <h1 class="display text-[clamp(35px,5.4vw,62px)] max-w-[15ch] mt-1">
             Leaving PRTG used to mean rebuilding everything.
-            <span class="text-white">Now it takes <span class="ink-underline">an afternoon.</span></span>
+            <span class="text-white">Now it takes <span class="accent-serif">an afternoon.</span></span>
           </h1>
 
           <p class="mt-7 text-[clamp(16px,2vw,18px)] text-white/60 max-w-[52ch]">
@@ -29,6 +29,10 @@ import Waitlist from './Waitlist.vue'
           <div class="mt-9 max-w-[520px]">
             <Waitlist />
           </div>
+
+          <p class="mono text-[11px] text-white/30 mt-6 tracking-wide">
+            <span class="text-brand-light/70">//</span> real export — 21 sensors resolved to 7 devices, live →
+          </p>
         </div>
 
         <!-- RIGHT half = live migration demo -->
