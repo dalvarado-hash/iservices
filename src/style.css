@@ -1,0 +1,164 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: #030305;
+    color: #e8ebf0;
+    font-family: 'Manrope', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.55;
+  }
+}
+
+@layer components {
+  /* glassy tile surface */
+  .glass {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(14px);
+  }
+
+  /* uppercase mono micro-labels */
+  .mono-label {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .display {
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.04;
+  }
+
+  /* signature gradient text */
+  .gradient-text-signature {
+    background: linear-gradient(224.95deg, #a446f4 0%, #4138f3 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+  /* vivid full-range gradient text */
+  .gradient-text {
+    background: linear-gradient(90deg, #00c3ff, #4138f3, #a446f4, #f1005b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  /* signature gradient button */
+  .btn-grad {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(224.95deg, #a446f4 0%, #4138f3 100%);
+    box-shadow: 0 12px 40px -16px rgba(127, 57, 233, 0.9);
+    transition: filter 0.18s ease, transform 0.18s ease;
+    white-space: nowrap;
+  }
+  .btn-grad:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+  }
+
+  /* brand-styled range slider */
+  .brand-range {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #4138f3, #a446f4, #f1005b);
+    outline: none;
+  }
+  .brand-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    border: 4px solid #7f39e9;
+    box-shadow: 0 0 0 4px rgba(127, 57, 233, 0.25);
+  }
+  .brand-range::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    border: 4px solid #7f39e9;
+    box-shadow: 0 0 0 4px rgba(127, 57, 233, 0.25);
+  }
+
+  /* scroll-reveal entrance */
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    animation: revealIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+}
+
+@keyframes revealIn {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* drifting gradient mesh behind the hero */
+@keyframes meshDrift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(4%, -3%, 0) scale(1.12);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+@keyframes meshDrift2 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  50% {
+    transform: translate3d(-5%, 4%, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+}
+
+.mesh-blob {
+  animation: meshDrift 22s ease-in-out infinite;
+}
+.mesh-blob-2 {
+  animation: meshDrift2 28s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

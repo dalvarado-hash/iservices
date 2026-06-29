@@ -1,0 +1,47 @@
+<script setup>
+import { ref } from 'vue'
+
+// front-end only — wire to a real form/Tally/Formspark before launch
+const email = ref('')
+const joined = ref(false)
+const emailInput = ref(null)
+
+function join() {
+  const em = email.value.trim()
+  if (!em || !em.includes('@')) {
+    if (emailInput.value) emailInput.value.focus()
+    return
+  }
+  joined.value = true
+}
+</script>
+
+<template>
+  <div id="waitlist" class="w-full">
+    <form v-if="!joined" class="flex flex-col sm:flex-row gap-2.5" @submit.prevent="join">
+      <label for="hero-email" class="sr-only">Work email</label>
+      <input
+        id="hero-email"
+        ref="emailInput"
+        v-model="email"
+        type="email"
+        placeholder="you@youragency.com"
+        class="flex-1 min-w-0 bg-white/5 border border-white/12 rounded-xl px-4 py-3.5 text-[15px] text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-brand-light focus:border-transparent"
+      />
+      <button type="submit" class="btn-grad px-6 py-3.5 text-[15px]">Get early access</button>
+    </form>
+
+    <p
+      v-else
+      class="text-signal text-[15px] font-medium flex items-start gap-2"
+      role="status"
+    >
+      <span aria-hidden="true">✓</span>
+      <span>You're on the list. We'll reach out personally — reply to the email and tell us what you're running.</span>
+    </p>
+
+    <p v-if="!joined" class="text-[12.5px] text-white/40 mt-3">
+      Early MSP partners get migration help and locked launch pricing. No spam, no card.
+    </p>
+  </div>
+</template>
