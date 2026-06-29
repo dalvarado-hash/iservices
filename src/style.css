@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background: #ffffff;
+    color: #1a1a2e;
+    font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+@layer components {
+  /* Narrow centered reading column — the editorial spine. */
+  .reading-column {
+    @apply mx-auto w-full max-w-[680px] px-6;
+  }
+  /* Slightly wider for tables / figures that need more room. */
+  .reading-wide {
+    @apply mx-auto w-full max-w-[920px] px-6;
+  }
+
+  /* A thin editorial hairline rule. */
+  .hairline {
+    @apply h-px w-full bg-slate-200;
+  }
+}
+
+@layer utilities {
+  /* Scroll reveal — used via useReveal() (.reveal -> .is-in). */
+  .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+  .reveal.is-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Light-theme purple range slider. */
+  .range-purple {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 5px;
+    border-radius: 999px;
+    background: #e2e8f0;
+    outline: none;
+  }
+  .range-purple::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #7f39e9;
+    cursor: pointer;
+    border: 3px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(127, 57, 233, 0.45);
+  }
+  .range-purple::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #7f39e9;
+    cursor: pointer;
+    border: 3px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(127, 57, 233, 0.45);
+  }
+  .range-purple:focus-visible {
+    outline: 2px solid #7f39e9;
+    outline-offset: 4px;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
