@@ -2,43 +2,43 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  // visual style of the tile
-  variant: { type: String, default: 'glass' }, // glass | solid | gradient | signature | outline
-  // optional scroll-reveal entrance delay in seconds
+  // visual surface: panel | feature | accent | outline | bare
+  variant: { type: String, default: 'panel' },
+  // scroll-reveal entrance delay in seconds
   delay: { type: Number, default: 0 },
-  // disable the inner padding when a child manages its own
+  // corner radius scale (different tiles, different radii — composed, not uniform)
+  radius: { type: String, default: '2xl' }, // 2xl | xl | lg
+  // disable inner padding when a child manages its own
   flush: { type: Boolean, default: false }
 })
 
 const variantClass = computed(() => {
   switch (props.variant) {
-    case 'solid':
-      return 'bg-ink-2 border border-white/8'
-    case 'gradient':
-      return 'border border-brand-light/30 bg-gradient-to-br from-brand-purple/25 via-brand-blue/15 to-brand-magenta/10'
-    case 'signature':
-      return 'border border-transparent text-white'
+    case 'feature':
+      return 'panel-feature'
+    case 'accent':
+      return 'panel-accent text-white'
     case 'outline':
-      return 'border border-white/12 bg-transparent'
-    case 'glass':
+      return 'border border-white/10 bg-transparent'
+    case 'bare':
+      return ''
+    case 'panel':
     default:
-      return 'glass'
+      return 'panel'
   }
 })
 
-const tileStyle = computed(() => {
-  const s = { animationDelay: props.delay ? props.delay + 's' : '0s' }
-  if (props.variant === 'signature') {
-    s.background = 'linear-gradient(224.95deg,#a446f4,#4138f3)'
-  }
-  return s
-})
+const radiusClass = computed(
+  () => ({ '2xl': 'rounded-2xl', xl: 'rounded-xl', lg: 'rounded-lg' }[props.radius] || 'rounded-2xl')
+)
+
+const tileStyle = computed(() => ({ animationDelay: props.delay ? props.delay + 's' : '0s' }))
 </script>
 
 <template>
   <div
-    class="reveal relative rounded-3xl overflow-hidden transition-shadow duration-300 hover:shadow-[0_30px_90px_-50px_rgba(164,70,244,0.8)]"
-    :class="[variantClass, flush ? '' : 'p-6 sm:p-7']"
+    class="reveal relative overflow-hidden transition-colors duration-200 hover:border-white/20"
+    :class="[variantClass, radiusClass, flush ? '' : 'p-6 sm:p-7']"
     :style="tileStyle"
   >
     <slot />

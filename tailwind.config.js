@@ -4,14 +4,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: '#030305',
-        'ink-2': '#0a0a12',
+        ink: '#050507',
+        panel: '#0b0b13',
+        'panel-2': '#101019',
         brand: {
           purple: '#7F39E9',
           light: '#a446f4',
-          blue: '#4138f3',
-          cyan: '#00c3ff',
-          magenta: '#F1005B'
+          soft: '#c9a4ff',
+          blue: '#4138f3'
         },
         signal: '#3DDC97',
         amber: '#FFB454',

@@ -1,20 +1,17 @@
 <script setup>
-// Final wide footer strip styled as a bento tile.
+import BrandMark from './BrandMark.vue'
 </script>
 
 <template>
-  <footer class="max-w-[1400px] mx-auto px-5 sm:px-8 pb-10">
+  <footer class="max-w-[1380px] mx-auto px-5 sm:px-8 pb-10">
     <div
-      class="reveal rounded-3xl glass px-6 sm:px-10 py-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6"
+      class="reveal rounded-2xl panel px-6 sm:px-10 py-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6"
     >
       <div>
         <div class="flex items-center gap-2 font-extrabold tracking-tight text-lg mb-3">
-          <span
-            class="h-2.5 w-2.5 rounded-full"
-            style="background: linear-gradient(224.95deg, #a446f4, #4138f3); box-shadow: 0 0 12px #7f39e9"
-          ></span>
+          <span class="text-brand-light"><BrandMark /></span>
           Impulse
-          <span class="text-white/40 font-medium">·</span>
+          <span class="text-white/30 font-medium">/</span>
           <span class="text-white/60 font-semibold">Scout</span>
         </div>
         <p class="text-sm text-white/50 max-w-[52ch]">
@@ -24,12 +21,14 @@
       </div>
 
       <div class="flex flex-col items-start md:items-end gap-3">
-        <span
-          class="inline-flex items-center gap-2 text-sm text-signal border border-signal/40 rounded-full px-4 py-2"
-        >
-          <span aria-hidden="true">🔒</span> Published pricing, locked for 3 years
+        <span class="inline-flex items-center gap-2 text-sm text-white/70 border border-white/12 rounded-md px-3.5 py-2">
+          <svg viewBox="0 0 20 20" width="16" height="16" fill="none" class="text-brand-light" aria-hidden="true">
+            <rect x="4" y="8.5" width="12" height="8" rx="1.6" stroke="currentColor" stroke-width="1.5" />
+            <path d="M6.5 8.5V6.5a3.5 3.5 0 0 1 7 0v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+          Published pricing, locked for 3 years
         </span>
-        <a href="#waitlist" class="btn-grad px-5 py-2.5 text-sm">Get early access</a>
+        <a href="#waitlist" class="btn px-5 py-2.5 text-sm">Get early access</a>
       </div>
     </div>
     <p class="text-center text-xs text-white/30 mt-6">

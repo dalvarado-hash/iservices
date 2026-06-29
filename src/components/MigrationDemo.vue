@@ -85,17 +85,17 @@ const dotClass = { up: 'bg-signal', warn: 'bg-amber', down: 'bg-down' }
 <template>
   <div
     ref="demoEl"
-    class="relative w-full rounded-3xl overflow-hidden glass shadow-[0_50px_140px_-50px_rgba(164,70,244,0.75)]"
+    class="relative w-full rounded-2xl overflow-hidden panel shadow-[0_40px_110px_-60px_rgba(0,0,0,0.9)]"
   >
-    <!-- gradient hairline top accent -->
-    <div class="h-[3px] w-full" style="background: linear-gradient(90deg,#00c3ff,#4138f3,#a446f4,#F1005B)"></div>
+    <!-- solid brand hairline top accent -->
+    <div class="h-px w-full bg-brand-purple"></div>
 
     <!-- terminal-style bar -->
-    <div class="flex items-center gap-2 px-5 py-3 border-b border-white/8 bg-white/[0.02]">
-      <span class="h-3 w-3 rounded-full bg-down/70"></span>
-      <span class="h-3 w-3 rounded-full bg-amber/70"></span>
-      <span class="h-3 w-3 rounded-full bg-signal/70"></span>
-      <span class="ml-3 font-mono text-xs text-white/40 truncate">
+    <div class="flex items-center gap-2 px-5 py-3 border-b border-white/8 bg-white/[0.015]">
+      <span class="h-2.5 w-2.5 rounded-full border border-white/15"></span>
+      <span class="h-2.5 w-2.5 rounded-full border border-white/15"></span>
+      <span class="h-2.5 w-2.5 rounded-full border border-white/15"></span>
+      <span class="ml-3 mono text-xs text-white/40 truncate">
         scout migrate — your-client-prtg-export.xml
       </span>
     </div>
@@ -123,8 +123,8 @@ const dotClass = { up: 'bg-signal', warn: 'bg-amber', down: 'bg-down' }
 
       <!-- middle arrow -->
       <div class="hidden md:flex flex-col items-center justify-center border-x border-white/8 bg-white/[0.02] text-white/40">
-        <div class="text-2xl gradient-text-signature font-bold">→</div>
-        <div class="mt-1.5 font-mono text-[10px] leading-tight text-center text-white/40">
+        <div class="text-2xl text-brand-light font-bold">→</div>
+        <div class="mt-1.5 mono text-[10px] leading-tight text-center text-white/40">
           Scout<br />consolidates
         </div>
       </div>
